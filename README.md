@@ -30,3 +30,4 @@ just build
 - [ ] Add option to `build` target to choose build type (release or debug)
 - [ ] Various improvements to the `just` file
 - [ ] Add vscode config files using devcontainer, _etc._
+- [ ] Separate the application and platform initialization in two separate crates (using the `member` configuration field of the `Cargo.toml` file, see https://github.com/emilk/egui/blob/master/Cargo.toml for example)
