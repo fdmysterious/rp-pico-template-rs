@@ -10,17 +10,16 @@ run_cmd := if is_in_docker == "0" {
 
 #################
 
+# Display the prefix command used in the current context
 echo-run-cmd:
     @echo run_cmd={{run_cmd}}
 
+# Check if we are running in the docker container
 check-in-docker:
     @echo {{if is_in_docker == "1" {"In docker container!"} else  {"Not in docker container!"} }}
 
-ensure-folders:
-    @mkdir -p build-tests
-    @mkdir -p logs
-
-build-docker force="no": ensure-folders
+# Build the docker environment used in this project
+build-docker force="no":
     #!/usr/bin/env sh
     if [ {{is_in_docker}} -eq 1 ] ; then
         echo "Running in docker container, skipping image generation !"
@@ -35,15 +34,19 @@ build-docker force="no": ensure-folders
 
 #################
 
+# Build the project
 build: build-docker
     {{run_cmd}} cargo build --release
 
+# Open a bash shell in the docker container
 shell: build-docker
     {{run_cmd}} /bin/bash
 
+# Call the cargo command in the container
 cargo +args: build-docker
     {{run_cmd}} cargo {{args}}
 	
-# TODO # Make this compatible outside of docker container
+# Get the .uf2 file of the main app in the root folder
 get-uf2: build
+    # TODO # Make this compatible outside of docker container
     {{run_cmd}} /home/builder/.cargo/bin/elf2uf2-rs target/thumbv6m-none-eabi/release/rp-pico-template rp-pico-template.uf2
