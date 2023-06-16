@@ -1,7 +1,7 @@
 #![no_std]
 
 use embedded_hal::digital::v2::OutputPin;
-use platform_data::PlatformIo;
+use platform_io::PlatformIo;
 
 pub fn main_loop(platf: &mut dyn PlatformIo){
     platf.led_on();

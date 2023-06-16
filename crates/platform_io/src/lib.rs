@@ -1,8 +1,5 @@
 #![no_std]
 
-use rp_pico as bsp;
-use cortex_m::delay::Delay;
-
 #[derive(Debug)]
 pub enum PlatformError {
     InitError,

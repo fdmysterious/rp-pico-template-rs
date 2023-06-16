@@ -1,9 +1,0 @@
-[package]
-name="platform_data"
-version="0.0.1"
-edition="2021"
-
-[dependencies]
-
-cortex-m = "0.7"
-rp-pico  = "0.3.0"

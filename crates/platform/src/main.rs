@@ -20,7 +20,7 @@ use bsp::hal::{
     gpio,
 };
 
-use platform_data::*;
+use platform_io::*;
 
 use app;
 
