@@ -49,4 +49,4 @@ cargo +args: build-docker
 # Get the .uf2 file of the main app in the root folder
 get-uf2: build
     # TODO # Make this compatible outside of docker container
-    {{run_cmd}} /home/builder/.cargo/bin/elf2uf2-rs target/thumbv6m-none-eabi/release/rp-pico-template rp-pico-template.uf2
+    {{run_cmd}} /home/builder/.cargo/bin/elf2uf2-rs target/thumbv6m-none-eabi/release/rp-pico-platform rp-pico-platform.uf2
