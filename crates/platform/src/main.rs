@@ -4,8 +4,6 @@
 
 use embedded_time::rate::*;
 
-use defmt::*;
-use defmt_rtt as _;
 use embedded_hal::digital::v2::OutputPin;
 use panic_probe as _;
 
@@ -24,9 +22,33 @@ use platform_io::*;
 
 use app;
 
-struct Platform {
-    led: gpio::Pin<gpio::bank0::Gpio25, gpio::PushPullOutput>,
+struct MyPlatformLed {
+    pin: gpio::Pin<gpio::bank0::Gpio25, gpio::PushPullOutput>
+}
+
+impl PlatformLed for MyPlatformLed {
+    fn led_on(&mut self) {
+        self.pin.set_high().unwrap();
+    }
+
+    fn led_off(&mut self) {
+        self.pin.set_low().unwrap();
+    }
+}
+
+struct MyPlatformSleep {
     delay: cortex_m::delay::Delay,
+}
+
+impl PlatformSleep for MyPlatformSleep {
+    fn sleep_ms(&mut self, delay_ms: u32) {
+        self.delay.delay_ms(delay_ms);
+    }
+}
+
+struct Platform {
+    led: MyPlatformLed,
+    delay: MyPlatformSleep,
 }
 
 impl Platform {
@@ -58,27 +80,14 @@ impl Platform {
             &mut pac.RESETS,
         );
 
-        let mut led_pin = pins.led.into_push_pull_output();
-        let delay       = cortex_m::delay::Delay::new(core.SYST, clocks.system_clock.freq().integer());
+        let led_pin = pins.led.into_push_pull_output();
+        let delay   = cortex_m::delay::Delay::new(core.SYST, clocks.system_clock.freq().integer());
+
 
         Ok(Self {
-            led: led_pin,
-            delay: delay,
+            led:   MyPlatformLed   { pin: led_pin },
+            delay: MyPlatformSleep { delay: delay },
         })
-    }
-}
-
-impl PlatformIo for Platform {
-    fn led_on(&mut self) {
-        self.led.set_high().unwrap();
-    }
-
-    fn led_off(&mut self) {
-        self.led.set_low().unwrap();
-    }
-
-    fn sleep_ms(&mut self, delay_ms: u32) {
-        self.delay.delay_ms(delay_ms);
     }
 }
 
@@ -87,6 +96,6 @@ fn main() -> ! {
     let mut platform = Platform::init().unwrap();
 
     loop {
-        app::main_loop(&mut platform);
+        app::main_loop(&mut platform.led, &mut platform.delay);
     }
 }
